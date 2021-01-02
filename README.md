@@ -1,3 +1,34 @@
+
+# RAP2-DOLORES by volun
+
+在原项目基础上增加支持非HTTP接口的归类
+
+1.新增接口时可选接口类型 
+
+
+后台: https://github.com/volunL/rap2-delos
+
+部署方式可以按原官方方案部署
+
+
+
+
+
+
+
+
+
+
+
+<br>
+
+<br>
+
+<br>
+
+<br>
+
+
 # RAP2-DOLORES CE version (front-end static build)
 
 [![Build Status](https://travis-ci.org/thx/rap2-dolores.svg?branch=master)](https://travis-ci.org/thx/rap2-dolores)
