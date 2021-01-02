@@ -1,8 +1,20 @@
 import React, { HTMLAttributes } from 'react'
-import { Chip, Typography, MenuItem, TextField, NoSsr, Paper } from '@material-ui/core'
+import {
+  Chip,
+  Typography,
+  MenuItem,
+  TextField,
+  NoSsr,
+  Paper
+} from '@material-ui/core'
 import { emphasize } from '@material-ui/core/styles/colorManipulator'
 import CancelIcon from '@material-ui/icons/Cancel'
-import { createStyles, makeStyles, useTheme, Theme } from '@material-ui/core/styles'
+import {
+  createStyles,
+  makeStyles,
+  useTheme,
+  Theme
+} from '@material-ui/core/styles'
 import { BaseTextFieldProps } from '@material-ui/core/TextField'
 import Select from 'react-select'
 import clsx from 'clsx'
@@ -27,55 +39,57 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       flexGrow: 1,
-      marginBottom: theme.spacing(1),
+      marginBottom: theme.spacing(1)
     },
     input: {
       display: 'flex',
       padding: 0,
-      height: 'auto',
+      height: 'auto'
     },
     valueContainer: {
       display: 'flex',
       flexWrap: 'wrap',
       flex: 1,
       alignItems: 'center',
-      overflow: 'hidden',
+      overflow: 'hidden'
     },
     chip: {
-      margin: theme.spacing(0.5, 0.25),
+      margin: theme.spacing(0.5, 0.25)
     },
     chipFocused: {
       backgroundColor: emphasize(
-        theme.palette.type === 'light' ? theme.palette.grey[300] : theme.palette.grey[700],
-        0.08,
-      ),
+        theme.palette.type === 'light'
+          ? theme.palette.grey[300]
+          : theme.palette.grey[700],
+        0.08
+      )
     },
     noOptionsMessage: {
-      padding: theme.spacing(1, 2),
+      padding: theme.spacing(1, 2)
     },
     singleValue: {
-      fontSize: 16,
+      fontSize: 16
     },
     placeholder: {
       position: 'absolute',
       left: 2,
       bottom: 6,
-      fontSize: 16,
+      fontSize: 16
     },
     paper: {
       position: 'absolute',
       zIndex: 1,
       marginTop: theme.spacing(1),
       left: 0,
-      right: 0,
+      right: 0
     },
     divider: {
-      height: theme.spacing(2),
-    },
-  }),
+      height: theme.spacing(2)
+    }
+  })
 )
 
-function NoOptionsMessage(props: NoticeProps<OptionType>) {
+function NoOptionsMessage(props: NoticeProps<OptionType, boolean>) {
   return (
     <Typography
       color="textSecondary"
@@ -87,13 +101,14 @@ function NoOptionsMessage(props: NoticeProps<OptionType>) {
   )
 }
 
-type InputComponentProps = Pick<BaseTextFieldProps, 'inputRef'> & HTMLAttributes<HTMLDivElement>
+type InputComponentProps = Pick<BaseTextFieldProps, 'inputRef'> &
+  HTMLAttributes<HTMLDivElement>
 
 function inputComponent({ inputRef, ...props }: InputComponentProps) {
   return <div ref={inputRef} {...props} />
 }
 
-function Control(props: ControlProps<OptionType>) {
+function Control(props: ControlProps<OptionType, boolean>) {
   return (
     <TextField
       style={{ minWidth: props.selectProps.minWidth || 350 }}
@@ -103,15 +118,15 @@ function Control(props: ControlProps<OptionType>) {
           className: props.selectProps.classes.input,
           inputRef: props.innerRef,
           children: props.children,
-          ...props.innerProps,
-        },
+          ...props.innerProps
+        }
       }}
       {...props.selectProps.TextFieldProps}
     />
   )
 }
 
-function Option(props: OptionProps<OptionType>) {
+function Option(props: OptionProps<OptionType, boolean>) {
   return (
     <MenuItem
       ref={props.innerRef}
@@ -124,7 +139,7 @@ function Option(props: OptionProps<OptionType>) {
   )
 }
 
-function Placeholder(props: PlaceholderProps<OptionType>) {
+function Placeholder(props: PlaceholderProps<OptionType, boolean>) {
   return (
     <Typography
       color="textSecondary"
@@ -138,14 +153,21 @@ function Placeholder(props: PlaceholderProps<OptionType>) {
 
 function SingleValue(props: SingleValueProps<OptionType>) {
   return (
-    <Typography className={props.selectProps.classes.singleValue} {...props.innerProps}>
+    <Typography
+      className={props.selectProps.classes.singleValue}
+      {...props.innerProps}
+    >
       {props.children}
     </Typography>
   )
 }
 
-function ValueContainer(props: ValueContainerProps<OptionType>) {
-  return <div className={props.selectProps.classes.valueContainer}>{props.children}</div>
+function ValueContainer(props: ValueContainerProps<OptionType, boolean>) {
+  return (
+    <div className={props.selectProps.classes.valueContainer}>
+      {props.children}
+    </div>
+  )
 }
 
 function MultiValue(props: MultiValueProps<OptionType>) {
@@ -154,7 +176,7 @@ function MultiValue(props: MultiValueProps<OptionType>) {
       tabIndex={-1}
       label={props.children}
       className={clsx(props.selectProps.classes.chip, {
-        [props.selectProps.classes.chipFocused]: props.isFocused,
+        [props.selectProps.classes.chipFocused]: props.isFocused
       })}
       onDelete={props.removeProps.onClick}
       deleteIcon={<CancelIcon {...props.removeProps} />}
@@ -162,9 +184,13 @@ function MultiValue(props: MultiValueProps<OptionType>) {
   )
 }
 
-function Menu(props: MenuProps<OptionType>) {
+function Menu(props: MenuProps<OptionType, boolean>) {
   return (
-    <Paper square={true} className={props.selectProps.classes.paper} {...props.innerProps}>
+    <Paper
+      square={true}
+      className={props.selectProps.classes.paper}
+      {...props.innerProps}
+    >
       {props.children}
     </Paper>
   )
@@ -178,7 +204,7 @@ const components = {
   Option,
   Placeholder,
   SingleValue,
-  ValueContainer,
+  ValueContainer
 }
 
 interface Props {
@@ -194,15 +220,23 @@ interface Props {
 function MaterialSelect(props: Props) {
   const classes = useStyles()
   const theme = useTheme()
-  const { loadOptions, isMulti = false, onChange, options, value, minWidth, isClearable = false } = props
+  const {
+    loadOptions,
+    isMulti = false,
+    onChange,
+    options,
+    value,
+    minWidth,
+    isClearable = false
+  } = props
   const selectStyles = {
     input: (base: any) => ({
       ...base,
       color: theme.palette.text.primary,
       '& input': {
-        font: 'inherit',
-      },
-    }),
+        font: 'inherit'
+      }
+    })
   }
   const commonProps: any = {
     minWidth,
@@ -210,10 +244,12 @@ function MaterialSelect(props: Props) {
     isMulti: isMulti,
     isClearable,
     noOptionsMessage: ({ inputValue }: { inputValue: string }) => {
-      return inputValue && inputValue.trim() ? '搜不到数据' : '请输入检索关键字'
+      return inputValue && inputValue.trim()
+        ? '搜不到数据'
+        : '请输入检索关键字'
     },
     onChange,
-    placeholder: `请选择(${isMulti ? '多选' : '单选'})`,
+    placeholder: `请选择(${isMulti ? '多选' : '单选'})`
   }
 
   if (value) {
@@ -242,8 +278,8 @@ function MaterialSelect(props: Props) {
             styles={selectStyles}
             TextFieldProps={{
               InputLabelProps: {
-                shrink: true,
-              },
+                shrink: true
+              }
             }}
             options={options as any}
             components={components}

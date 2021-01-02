@@ -9,14 +9,24 @@ import { CopyToClipboard } from '../utils/'
 import { getRelativeUrl } from '../../utils/URLUtils'
 import './InterfaceSummary.css'
 import { showMessage, MSG_TYPE } from 'actions/common'
-import { TextField, Select, InputLabel, Input, MenuItem, FormControl, RadioGroup, FormControlLabel, Radio } from '@material-ui/core'
+import {
+  TextField,
+  Select,
+  InputLabel,
+  Input,
+  MenuItem,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio
+} from '@material-ui/core'
 import Markdown from 'markdown-to-jsx'
 
 export enum BODY_OPTION {
   FORM_DATA = 'FORM_DATA',
   FORM_URLENCODED = 'FORM_URLENCODED',
   RAW = 'RAW',
-  BINARY = 'BINARY',
+  BINARY = 'BINARY'
 }
 
 export function formatBodyOption(type: BODY_OPTION) {
@@ -38,7 +48,7 @@ export const BODY_OPTION_LIST = [
   { label: 'form-data', value: BODY_OPTION.FORM_DATA },
   { label: 'x-www-form-urlencoded', value: BODY_OPTION.FORM_URLENCODED },
   { label: 'raw', value: BODY_OPTION.RAW },
-  { label: 'binary', value: BODY_OPTION.BINARY },
+  { label: 'binary', value: BODY_OPTION.BINARY }
 ]
 
 /**
@@ -66,7 +76,7 @@ function url2name(itf: any) {
     return {
       ok: false,
       name: '',
-      message: `\n  ✘ 您的rap接口url设置格式不正确，参考格式：/api/test.json (接口url:${apiUrl}, 项目id:${projectId}, 接口id:${id})\n`,
+      message: `\n  ✘ 您的rap接口url设置格式不正确，参考格式：/api/test.json (接口url:${apiUrl}, 项目id:${projectId}, 接口id:${id})\n`
     }
   }
 
@@ -97,7 +107,7 @@ function url2name(itf: any) {
   return {
     ok: true,
     name: urlToName,
-    message: '',
+    message: ''
   }
 }
 type InterfaceSummaryProps = {
@@ -107,24 +117,24 @@ type InterfaceSummaryProps = {
   [x: string]: any;
 }
 type InterfaceSummaryState = {
-  bodyOption?: any
-  method?: any
-  status?: any
-  posFilter: POS_TYPE
-  [x: string]: any
+  bodyOption?: any;
+  method?: any;
+  status?: any;
+  posFilter: POS_TYPE;
+  [x: string]: any;
 }
 class InterfaceSummary extends Component<
   InterfaceSummaryProps,
   InterfaceSummaryState
-  > {
+> {
   static contextTypes = {
-    onDeleteInterface: PropTypes.func.isRequired,
+    onDeleteInterface: PropTypes.func.isRequired
   }
   constructor(props: any) {
     super(props)
     this.state = {
       bodyOption: props?.itf?.bodyOption ?? BODY_OPTION.FORM_DATA,
-      posFilter: props?.itf?.method === 'POST' ? POS_TYPE.BODY : POS_TYPE.QUERY,
+      posFilter: props?.itf?.method === 'POST' ? POS_TYPE.BODY : POS_TYPE.QUERY
     }
     this.changeMethod = this.changeMethod.bind(this)
     this.changeHandler = this.changeHandler.bind(this)
@@ -134,19 +144,15 @@ class InterfaceSummary extends Component<
     props.stateChangeHandler && props.stateChangeHandler(this.state)
   }
   switchBodyOption(val: BODY_OPTION) {
-    this.setState({ bodyOption: val },
-      () => {
-        this.props.stateChangeHandler(this.state)
-      }
-    )
+    this.setState({ bodyOption: val }, () => {
+      this.props.stateChangeHandler(this.state)
+    })
   }
   switchPos(val: POS_TYPE) {
     return () => {
-      this.setState( { posFilter: val },
-        () => {
-          this.props.stateChangeHandler(this.state)
-        }
-      )
+      this.setState({ posFilter: val }, () => {
+        this.props.stateChangeHandler(this.state)
+      })
     }
   }
   changeMethod(method: any) {
@@ -157,7 +163,7 @@ class InterfaceSummary extends Component<
   }
   changeHandler(e: any) {
     this.setState({
-      [e.target.name]: e.target.value,
+      [e.target.name]: e.target.value
     })
   }
   copyModelName() {
@@ -184,15 +190,15 @@ class InterfaceSummary extends Component<
       repository = {},
       itf = {},
       editable,
-      handleChangeInterface,
+      handleChangeInterface
     } = this.props
     const { posFilter } = this.state
     const keyMap = {
-      COPY_MODEL_NAME: ['ctrl+alt+c'],
+      COPY_MODEL_NAME: ['ctrl+alt+c']
     }
 
     const handlers = {
-      COPY_MODEL_NAME: this.copyModelName,
+      COPY_MODEL_NAME: this.copyModelName
     }
 
     if (!itf.id) {
@@ -225,57 +231,97 @@ class InterfaceSummary extends Component<
                   margin="normal"
                 />
               </div>
+
               <div>
                 <TextField
-                  id="url"
-                  label="地址"
-                  value={itf.url || ''}
+                  id="interface_type"
+                  label="接口类型"
+                  value={itf.interface_type || ''}
                   fullWidth={true}
                   autoComplete="off"
                   onChange={e => {
-                    handleChangeInterface({ url: e.target.value })
+                    handleChangeInterface({
+                      interface_type: e.target.value,
+                      method: '',
+                      status: '',
+                      url: ''
+                    })
                   }}
                   margin="normal"
                 />
               </div>
-              <div>
-                <div style={{ width: 90, display: 'inline-block' }}>
-                  <InputLabel shrink={true} htmlFor="method-label-placeholder"> 类型 </InputLabel>
-                  <Select
-                    value={itf.method}
-                    input={<Input name="method" id="method-label-placeholder" />}
-                    onChange={e => {
-                      handleChangeInterface({ method: e.target.value })
-                    }}
-                    displayEmpty={true}
-                    name="method"
-                  >
-                    {METHODS.map(method => (
-                      <MenuItem key={method} value={method}>
-                        {method}
-                      </MenuItem>
-                    ))}
-                  </Select>
+
+              {itf.interface_type === 'HTTP' ? (
+                <div>
+                  <div>
+                    <TextField
+                      id="url"
+                      label="地址"
+                      value={itf.url || ''}
+                      fullWidth={true}
+                      autoComplete="off"
+                      onChange={e => {
+                        handleChangeInterface({ url: e.target.value })
+                      }}
+                      margin="normal"
+                    />
+                  </div>
+
+                  <div style={{ width: 90, display: 'inline-block' }}>
+                    <InputLabel
+                      shrink={true}
+                      htmlFor="method-label-placeholder"
+                    >
+                      {' '}
+                      类型{' '}
+                    </InputLabel>
+                    <Select
+                      value={itf.method}
+                      input={
+                        <Input name="method" id="method-label-placeholder" />
+                      }
+                      onChange={e => {
+                        handleChangeInterface({ method: e.target.value })
+                      }}
+                      displayEmpty={true}
+                      name="method"
+                    >
+                      {METHODS.map(method => (
+                        <MenuItem key={method} value={method}>
+                          {method}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </div>
+                  <div style={{ width: 120, display: 'inline-block' }}>
+                    <InputLabel
+                      shrink={true}
+                      htmlFor="status-label-placeholder"
+                      style={{ width: 100 }}
+                    >
+                      {' '}
+                      状态码{' '}
+                    </InputLabel>
+                    <Select
+                      value={itf.status}
+                      input={
+                        <Input name="status" id="status-label-placeholder" />
+                      }
+                      onChange={e => {
+                        handleChangeInterface({ status: e.target.value })
+                      }}
+                      displayEmpty={true}
+                      name="status"
+                    >
+                      {STATUS_LIST.map(status => (
+                        <MenuItem key={status} value={status}>
+                          {status}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </div>
                 </div>
-                <div style={{ width: 120, display: 'inline-block' }}>
-                  <InputLabel shrink={true} htmlFor="status-label-placeholder" style={{ width: 100 }}> 状态码 </InputLabel>
-                  <Select
-                    value={itf.status}
-                    input={<Input name="status" id="status-label-placeholder" />}
-                    onChange={e => {
-                      handleChangeInterface({ status: e.target.value })
-                    }}
-                    displayEmpty={true}
-                    name="status"
-                  >
-                    {STATUS_LIST.map(status => (
-                      <MenuItem key={status} value={status}>
-                        {status}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </div>
-              </div>
+              ) : null}
               <TextField
                 id="description"
                 label="描述（可多行, 支持Markdown）"
@@ -291,96 +337,125 @@ class InterfaceSummary extends Component<
               />
             </div>
           ) : (
-              <>
-                <li>
-                  <span className="mr5">
-                    <span className="label">接口ID：</span>
-                    {itf.id}
-                  </span>
-                </li>
-                <li>
-                  <CopyToClipboard text={itf.url} type="right">
-                    <span className="mr5">
-                      <span className="label">地址：</span>
-                      <a
-                        href={`${serve}/app/mock/${repository.id}${getRelativeUrl(itf.url || '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {itf.url}
-                      </a>
+            <>
+              <li>
+                <span className="mr5">
+                  <span className="label">接口ID：</span>
+                  {itf.id}
+                </span>
+              </li>
+
+              <li>
+                <span className="mr5">
+                  <span className="label">接口类型：</span>
+                  {itf.interface_type}
+                </span>
+              </li>
+
+              {itf.interface_type === 'HTTP' ? (
+                <>
+                  <li>
+                    <CopyToClipboard text={itf.url} type="right">
+                      <span className="mr5">
+                        <span className="label">地址：</span>
+                        <a
+                          href={`${serve}/app/mock/${
+                            repository.id
+                          }${getRelativeUrl(itf.url || '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {itf.url}
+                        </a>
+                      </span>
+                    </CopyToClipboard>
+                  </li>
+                  <li>
+                    <span>
+                      <span className="label">类型：</span>
+                      <span>{itf.method}</span>
                     </span>
-                  </CopyToClipboard>
-                </li>
-                <li>
-                  <span>
-                    <span className="label">类型：</span>
-                    <span>{itf.method}</span>
-                  </span>
-                </li>
-                <li>
-                  <span>
-                    <span className="label">状态码：</span>
-                    <span>{itf.status}</span>
-                  </span>
-                </li>
-              </>
-            )}
+                  </li>
+                  <li>
+                    <span>
+                      <span className="label">状态码：</span>
+                      <span>{itf.status}</span>
+                    </span>
+                  </li>
+                </>
+              ) : null}
+            </>
+          )}
         </ul>
         {itf.description && (
           <CopyToClipboard text={itf.description}>
             <Markdown>{itf.description}</Markdown>
           </CopyToClipboard>
         )}
-        {
-          editable && (
-            <ul className="nav nav-tabs" role="tablist">
-              <li className="nav-item" onClick={this.switchPos(POS_TYPE.HEADER)} >
-                <button
-                  className={`nav-link ${posFilter === POS_TYPE.HEADER ? 'active' : ''}`}
-                  role="tab"
-                  data-toggle="tab"
-                >
-                  Headers
+        {editable && (
+          <ul className="nav nav-tabs" role="tablist">
+            <li className="nav-item" onClick={this.switchPos(POS_TYPE.HEADER)}>
+              <button
+                className={`nav-link ${
+                  posFilter === POS_TYPE.HEADER ? 'active' : ''
+                }`}
+                role="tab"
+                data-toggle="tab"
+              >
+                Headers
               </button>
-              </li>
-              <li className="nav-item" onClick={this.switchPos(POS_TYPE.QUERY)} >
-                <button
-                  className={`nav-link ${posFilter === POS_TYPE.QUERY ? 'active' : ''}`}
-                  role="tab"
-                  data-toggle="tab"
-                >
-                  Query Params
+            </li>
+
+            <li className="nav-item" onClick={this.switchPos(POS_TYPE.QUERY)}>
+              <button
+                className={`nav-link ${
+                  posFilter === POS_TYPE.QUERY ? 'active' : ''
+                }`}
+                role="tab"
+                data-toggle="tab"
+              >
+                Query Params
               </button>
-              </li>
-              <li className="nav-item" onClick={this.switchPos(POS_TYPE.BODY)} >
+            </li>
+
+            {itf.interface_type === 'HTTP' ? (
+              <li className="nav-item" onClick={this.switchPos(POS_TYPE.BODY)}>
                 <button
-                  className={`nav-link ${posFilter === POS_TYPE.BODY ? 'active' : ''}`}
+                  className={`nav-link ${
+                    posFilter === POS_TYPE.BODY ? 'active' : ''
+                  }`}
                   role="tab"
                   data-toggle="tab"
                 >
                   Body Params
-              </button>
+                </button>
               </li>
-            </ul>
-          )
-        }
-        {
-          editable && posFilter === POS_TYPE.BODY ? (
-            <FormControl component="fieldset">
-              <RadioGroup
-                aria-label="body type"
-                name="body-type"
-                value={this.state.bodyOption}
-                onChange={e => this.switchBodyOption(e.target.value as BODY_OPTION)}
-                row={true}
-              >
-                {BODY_OPTION_LIST.map(x => <FormControlLabel key={x.value} value={x.value} control={<Radio />} label={x.label} />)}
-              </RadioGroup>
-            </FormControl>
-          ) : null
-        }
-      </div >
+            ) : null}
+          </ul>
+        )}
+        {editable && posFilter === POS_TYPE.BODY ? (
+          <FormControl component="fieldset">
+            <RadioGroup
+              aria-label="body type"
+              name="body-type"
+              value={this.state.bodyOption}
+              onChange={e =>
+                this.switchBodyOption(e.target.value as BODY_OPTION)
+              }
+              row={true}
+            >
+              {BODY_OPTION_LIST.map(x => (
+                <FormControlLabel
+                  key={x.value}
+                  value={x.value}
+                  control={<Radio />}
+                  label={x.label}
+                />
+              ))}
+            </RadioGroup>
+          </FormControl>
+        ) : null}
+      </div>
     )
   }
   handleDelete = (e: any, itf: any) => {
@@ -397,16 +472,14 @@ class InterfaceSummary extends Component<
         replace(deleteHref)
       })
     }
-  }
-  handleUpdate = () => { /** empty */ }
+  };
+  handleUpdate = () => {
+    /** empty */
+  };
 }
-const mapStateToProps = () => ({
-})
+const mapStateToProps = () => ({})
 const mapDispatchToProps = {
   replace,
-  showMessage,
+  showMessage
 }
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(InterfaceSummary)
+export default connect(mapStateToProps, mapDispatchToProps)(InterfaceSummary)

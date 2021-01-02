@@ -1,8 +1,23 @@
 import React, { useState, MouseEventHandler, CSSProperties } from 'react'
-import { connect, Link, StoreStateRouterLocationURI, replace } from '../../family'
-import { sortInterfaceList, deleteInterface, unlockInterface } from '../../actions/interface'
+import {
+  connect,
+  Link,
+  StoreStateRouterLocationURI,
+  replace
+} from '../../family'
+import {
+  sortInterfaceList,
+  deleteInterface,
+  unlockInterface
+} from '../../actions/interface'
 import { deleteModule } from '../../actions/module'
-import { Module, Repository, RootState, Interface, User } from '../../actions/types'
+import {
+  Module,
+  Repository,
+  RootState,
+  Interface,
+  User
+} from '../../actions/types'
 import { RSortable, CustomScroll } from '../utils'
 import InterfaceForm from './InterfaceForm'
 import { useConfirm } from 'hooks/useConfirm'
@@ -37,11 +52,12 @@ function InterfaceBase(props: InterfaceBaseProps) {
 
   const handleDeleteInterface: MouseEventHandler<HTMLAnchorElement> = e => {
     e.preventDefault()
-    const message = `接口被删除后不可恢复！\n确认继续删除『#${itf!.id} ${itf!.name}』吗？`
+    const message = `接口被删除后不可恢复！\n确认继续删除『#${itf!.id} ${
+      itf!.name
+    }』吗？`
     if (window.confirm(message)) {
       const { deleteInterface } = props
-      deleteInterface(props.itf!.id, () => {
-      })
+      deleteInterface(props.itf!.id, () => {})
       const { pathname, hash, search } = router.location
       replace(pathname + hash + search)
     }
@@ -53,17 +69,20 @@ function InterfaceBase(props: InterfaceBaseProps) {
         <Link
           to={selectHref}
           onClick={e => {
-            if (
-              curItf &&
-              curItf.locker
-            ) {
-              if (!window.confirm('编辑模式下切换接口，会导致编辑中的资料丢失，是否确定切换接口？')) {
+            if (curItf && curItf.locker) {
+              if (
+                !window.confirm(
+                  '编辑模式下切换接口，会导致编辑中的资料丢失，是否确定切换接口？'
+                )
+              ) {
                 e.preventDefault()
               } else {
                 unlockInterface(curItf.id)
               }
             } else {
-              const top = document.querySelector<HTMLElement>('.InterfaceEditor')!.offsetTop - 10
+              const top =
+                document.querySelector<HTMLElement>('.InterfaceEditor')!
+                  .offsetTop - 10
               // 当接口列表悬浮时切换接口自动跳转到接口顶部
               if (window.scrollY > top) {
                 window.scrollTo(0, top)
@@ -71,8 +90,14 @@ function InterfaceBase(props: InterfaceBaseProps) {
             }
           }}
         >
-          <div className="name">{itf!.name}</div>
-          <div className="url">{itf!.url}</div>
+          <div className="name">
+            {itf!.name}&nbsp;&nbsp;
+            <span className="badge badge-secondary">{itf!.interface_type}</span>
+          </div>
+
+          {itf!.interface_type === 'HTTP' ? (
+            <div className="url"> {itf!.url}</div>
+          ) : null}
         </Link>
       </span>
       {repository.canUserEdit ? (
@@ -107,14 +132,17 @@ function InterfaceBase(props: InterfaceBaseProps) {
 }
 const mapStateToProps = (state: RootState) => ({
   curItf: getCurrentInterface(state),
-  router: state.router,
+  router: state.router
 })
 const mapDispatchToProps = {
   replace,
   deleteInterface,
-  unlockInterface,
+  unlockInterface
 }
-const InterfaceWrap = connect(mapStateToProps, mapDispatchToProps)(InterfaceBase)
+const InterfaceWrap = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(InterfaceBase)
 
 interface InterfaceListProps {
   itfs?: Interface[]
@@ -125,14 +153,14 @@ interface InterfaceListProps {
 }
 const useStyles = makeStyles(({ palette }: Theme) => ({
   interface: {
-    border: `1px solid ${palette.primary.main}`,
+    border: `1px solid ${palette.primary.main}`
   },
   interfaceActive: {
-    borderLeft: `3px solid ${palette.primary.main}`,
+    borderLeft: `3px solid ${palette.primary.main}`
   },
   li: {
-    borderBottom: `1px solid ${palette.primary.main}`,
-  },
+    borderBottom: `1px solid ${palette.primary.main}`
+  }
 }))
 function InterfaceList(props: InterfaceListProps) {
   const [interfaceFormOpen, setInterfaceFormOpen] = useState(false)
@@ -144,13 +172,23 @@ function InterfaceList(props: InterfaceListProps) {
   const { repository, itf, itfs = [], mod } = props
   const classes = useStyles()
 
-  const dangerousStyles: CSSProperties = { color: '#CC0000', fontWeight: 'bold', fontSize: 16, display: 'inline', margin: '0 4px' } // 给眼神不太好的同学专门的设计
+  const dangerousStyles: CSSProperties = {
+    color: '#CC0000',
+    fontWeight: 'bold',
+    fontSize: 16,
+    display: 'inline',
+    margin: '0 4px'
+  } // 给眼神不太好的同学专门的设计
 
   const handleDeleteModule: MouseEventHandler<HTMLButtonElement> = e => {
     e.preventDefault()
     const message = (
       <div style={{ width: 800 }}>
-        <div><div style={dangerousStyles}>模块</div>被删除后<div style={dangerousStyles}>不可恢复</div>！并且会删除<div style={dangerousStyles}>相关的接口</div>！</div>
+        <div>
+          <div style={dangerousStyles}>模块</div>被删除后
+          <div style={dangerousStyles}>不可恢复</div>！并且会删除
+          <div style={dangerousStyles}>相关的接口</div>！
+        </div>
         <div>
           确认继续删除『#${mod.id} ${mod.name}
           』吗？
@@ -159,16 +197,9 @@ function InterfaceList(props: InterfaceListProps) {
     )
     confirm({
       title: '确认删除模块',
-      content: message,
+      content: message
     }).then(() => {
-      dispatch(
-        deleteModule(
-          props.mod.id,
-          () => {
-          },
-          repository!.id,
-        ),
-      )
+      dispatch(deleteModule(props.mod.id, () => {}, repository!.id))
     })
   }
 
@@ -176,14 +207,13 @@ function InterfaceList(props: InterfaceListProps) {
     dispatch(
       sortInterfaceList(sortable.toArray(), mod.id, () => {
         /** empty */
-      }),
+      })
     )
   }
 
   if (repository.modules.length === 0) {
     return <div style={{ height: 600 }}>请先添加模块</div>
   }
-
 
   return (
     <article className="InterfaceList">
@@ -208,13 +238,25 @@ function InterfaceList(props: InterfaceListProps) {
           />
 
           <ButtonGroup fullWidth={true} size="medium">
-            <Button variant="outlined" color="primary" onClick={() => setModuleFormOpen(true)}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => setModuleFormOpen(true)}
+            >
               修改模块
             </Button>
-            <Button variant="outlined" color="primary" onClick={() => setMoveModuleFormOpen(true)}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => setMoveModuleFormOpen(true)}
+            >
               移动/复制
             </Button>
-            <Button variant="outlined" color="primary" onClick={handleDeleteModule}>
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={handleDeleteModule}
+            >
               删除模块
             </Button>
           </ButtonGroup>
@@ -248,7 +290,9 @@ function InterfaceList(props: InterfaceListProps) {
                 {itfs.map((item: any) => (
                   <li
                     key={item.id}
-                    className={`${item.id === itf!.id ? classes.interfaceActive : ''} sortable ${classes.li}`}
+                    className={`${
+                      item.id === itf!.id ? classes.interfaceActive : ''
+                    } sortable ${classes.li}`}
                     data-id={item.id}
                   >
                     <InterfaceWrap
@@ -265,8 +309,8 @@ function InterfaceList(props: InterfaceListProps) {
           </CustomScroll>
         </div>
       ) : (
-          <div className="alert alert-info">暂无接口，请新建</div>
-        )}
+        <div className="alert alert-info">暂无接口，请新建</div>
+      )}
     </article>
   )
 }

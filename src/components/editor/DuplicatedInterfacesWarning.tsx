@@ -6,23 +6,23 @@ import { connect } from 'react-redux'
 import { RouterState } from 'connected-react-router'
 
 type DuplicatedInterfacesWarningState = {
-  showMore: boolean
+  showMore: boolean;
 }
 type DuplicatedInterfacesWarningProps = {
-  repository: any
-  router: RouterState
+  repository: any;
+  router: RouterState;
 }
 class DuplicatedInterfacesWarning extends Component<
   DuplicatedInterfacesWarningProps,
   DuplicatedInterfacesWarningState
 > {
   static contextTypes = {
-    store: PropTypes.object,
+    store: PropTypes.object
   }
   constructor(props: DuplicatedInterfacesWarningProps) {
     super(props)
     this.state = {
-      showMore: false,
+      showMore: false
     }
   }
 
@@ -31,6 +31,9 @@ class DuplicatedInterfacesWarning extends Component<
     for (const mod of repository.modules) {
       for (const itf of mod.interfaces) {
         const key = `${itf.method} ${itf.url}`
+        if (itf.interface_type !== 'HTTP') {
+          continue
+        }
         if (!counter[key]) {
           counter[key] = []
         }
@@ -62,7 +65,9 @@ class DuplicatedInterfacesWarning extends Component<
     if (!repository) {
       return null
     }
-    const duplicated = DuplicatedInterfacesWarning.parseDuplicatedInterfaces(repository)
+    const duplicated = DuplicatedInterfacesWarning.parseDuplicatedInterfaces(
+      repository
+    )
     if (!duplicated.length) {
       return null
     }
@@ -79,7 +84,9 @@ class DuplicatedInterfacesWarning extends Component<
                   {index === 0 && (
                     <>
                       <GoAlert className="icon" />
-                      <span className="msg">警告：检测到 {duplicated.length} 组重复接口</span>
+                      <span className="msg">
+                        警告：检测到 {duplicated.length} 组重复接口
+                      </span>
                     </>
                   )}
                   <span className="itf">
@@ -103,7 +110,7 @@ class DuplicatedInterfacesWarning extends Component<
                     className="fake-link more-link"
                     onClick={() => {
                       this.setState({
-                        showMore: !showMore,
+                        showMore: !showMore
                       })
                     }}
                   >
@@ -111,12 +118,12 @@ class DuplicatedInterfacesWarning extends Component<
                   </span>
                 )}
               </div>
-            ),
+            )
         )}
       </div>
     )
   }
 }
 export default connect((state: any) => ({
-  router: state.router,
+  router: state.router
 }))(DuplicatedInterfacesWarning)

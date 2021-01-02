@@ -4,10 +4,10 @@ import { POS_TYPE } from 'components/editor/InterfaceSummary'
 
 export interface RootState {
   auth: {
-    id: number
-    empId: string
-    fullname: string
-    email: string
+    id: number;
+    empId: string;
+    fullname: string;
+    email: string;
   }
   router: RouterState
   repository: any
@@ -81,7 +81,7 @@ export interface IConfig {
   serve: string
   keys: string[]
   session: {
-    key: string
+    key: string;
   }
 }
 
@@ -184,6 +184,8 @@ export interface Interface {
 
   name: string
 
+  interface_type: string
+
   url: string
 
   method: string
@@ -208,8 +210,8 @@ export interface Interface {
 }
 
 export type Async<T> = {
-  data: T
-  fetching: boolean
+  data: T;
+  fetching: boolean;
 }
 export interface Property {
   id: number | string
